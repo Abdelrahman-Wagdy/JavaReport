@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<suite name="Appium Test Suite">
+    <listeners>
+        <listener class-name="listeners.TestNGAllureListener"/>
+    </listeners>
+
+    <test name="Login Tests">
+        <classes>
+            <class name="LoginTests"/>
+        </classes>
+    </test>
+</suite>
