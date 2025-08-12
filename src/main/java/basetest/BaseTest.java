@@ -1,4 +1,4 @@
-package hooks;
+package basetest;
 
 import core.AppiumServerManager;
 import core.DriverFactory;
@@ -7,7 +7,7 @@ import io.cucumber.java.*;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
-public class Hooks {
+public class BaseTest {
     private static AppiumDriver driver;
     private static ThreadLocal<String> currentStepName = new ThreadLocal<>();
 
@@ -19,7 +19,7 @@ public class Hooks {
 
     @BeforeStep
     public void beforeStep() {
-        System.out.println("▶ About to run: " + StepTracker.currentStep());
+        System.out.println("▶ About to run: " + StepsTrackerManager.getCurrentStep());
     }
 
     @AfterStep                       // fires after each Gherkin step
@@ -29,7 +29,7 @@ public class Hooks {
         byte[] png = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
 
         // 2) name the attachment -- the current step text, if you captured it
-        String stepName = StepTracker.currentStep();   // ThreadLocal from earlier
+        String stepName = StepsTrackerManager.getCurrentStep();   // ThreadLocal from earlier
         if (stepName == null || stepName.isBlank()) {
             stepName = "screenshot";
         }
@@ -45,19 +45,6 @@ public class Hooks {
         }
         AppiumServerManager.stopServer();
         currentStepName.remove();
-    }
-
-    // Static methods to get driver and manage step names
-    public static AppiumDriver getDriver() {
-        return driver;
-    }
-
-    public static void setCurrentStepName(String stepName) {
-        currentStepName.set(stepName);
-    }
-
-    public static String getCurrentStepName() {
-        return currentStepName.get();
     }
 
 }
