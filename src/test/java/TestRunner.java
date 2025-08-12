@@ -5,7 +5,7 @@ import io.cucumber.junit.CucumberOptions;
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = "src/test/resources/features",
-        glue     = {"stepdefs", "hooks"},
+        glue     = {"stepdefs", "basetest"},
         plugin   = {
                 "pretty",
                 "hooks.StepTracker",
