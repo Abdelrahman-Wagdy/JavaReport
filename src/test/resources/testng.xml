@@ -7,7 +7,7 @@
 
     <test name="Login Tests">
         <classes>
-            <class name="testrunners.TestRunner"/>
+            <class name="LoginTests"/>
         </classes>
     </test>
 </suite>

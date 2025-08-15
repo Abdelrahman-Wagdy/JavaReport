@@ -1,21 +1,20 @@
 package listeners;
 
+import basetest.ExtentManager;
+import basetest.ScreenshotUtils;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
-import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import core.DriverFactory;
 import io.appium.java_client.AppiumDriver;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
+import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class TestNGExtentListener implements ITestListener {
@@ -24,20 +23,17 @@ public class TestNGExtentListener implements ITestListener {
     private static final ThreadLocal<Long> testStartTime = new ThreadLocal<>();
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    private static final ExtentReports extent = createExtentReport();
+    private static ExtentReports extent;
+    private static String screenshotDir;
+    private static final ThreadLocal<String> screenshotDirPath = new ThreadLocal<>();
 
-    private static ExtentReports createExtentReport() {
-        String reportPath = "extent-report/ExtentReport_" +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".html";
-        ExtentSparkReporter reporter = new ExtentSparkReporter(reportPath);
-        reporter.config().setReportName("Automation Test Report");
-        reporter.config().setDocumentTitle("Test Execution Report");
 
-        ExtentReports extentReports = new ExtentReports();
-        extentReports.attachReporter(reporter);
-        extentReports.setSystemInfo("Platform", "Android");
-        extentReports.setSystemInfo("App", "SauceLabs Demo App");
-        return extentReports;
+
+    @Override
+    public void onStart(ITestContext context) {
+        String deviceName = System.getProperty("device.name", "Android Emulator");
+        extent = ExtentManager.getInstance(deviceName);
+        screenshotDir = ScreenshotUtils.getInstance();
     }
 
     @Override
@@ -46,9 +42,9 @@ public class TestNGExtentListener implements ITestListener {
         ExtentTest extentTest = extent.createTest(result.getMethod().getMethodName())
                 .assignCategory(result.getTestClass().getName());
         test.set(extentTest);
-
         test.get().log(Status.INFO, "🚀 Starting test: " + result.getMethod().getMethodName());
         addEnvironmentInfo(result);
+        screenshotDirPath.set(ScreenshotUtils.setScreenshotPath(screenshotDir, result.getMethod().getMethodName()));
     }
 
     @Override
@@ -62,7 +58,7 @@ public class TestNGExtentListener implements ITestListener {
     @Override
     public void onTestFailure(ITestResult result) {
         test.get().log(Status.FAIL, "❌ Test failed: " + result.getThrowable());
-        takeScreenshot("❌ FAILURE - " + result.getMethod().getMethodName());
+        takeScreenshot("FAILURE_" + result.getMethod().getMethodName());
         captureDeviceLogs("Device Logs - " + result.getMethod().getMethodName());
         addFailureInfo(result);
         test.remove();
@@ -77,22 +73,23 @@ public class TestNGExtentListener implements ITestListener {
     }
 
     @Override
-    public void onFinish(org.testng.ITestContext context) {
+    public void onFinish(ITestContext context) {
         extent.flush();
     }
 
     private void takeScreenshot(String name) {
-        try {
-            AppiumDriver driver = DriverFactory.getDriver();
-            if (driver != null) {
-                byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-                String base64Screenshot = Base64.getEncoder().encodeToString(screenshot);
+        AppiumDriver driver = DriverFactory.getDriver();
 
-                test.get().addScreenCaptureFromBase64String(base64Screenshot, name + " [" + timestamp + "]");
-            }
-        } catch (Exception e) {
-            test.get().log(Status.WARNING, "⚠️ Failed to take screenshot: " + e.getMessage());
+        try {
+            String screenshot = ScreenshotUtils.getScreenshotPath(
+                    name,
+                    driver,
+                    screenshotDirPath.get()
+            );
+            test.get().addScreenCaptureFromPath(screenshot, name);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

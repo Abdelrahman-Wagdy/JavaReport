@@ -29,7 +29,7 @@ public class BaseTest {
     private static final ThreadLocal<ExtentTest> scenarioTest = new ThreadLocal<>();
     private static final ThreadLocal<String> screenshotDirPath = new ThreadLocal<>();
     private static final List<String> FAILED_SCENARIOS = new ArrayList<>();
-    private static final String screenShotDir = ScreenshotUtils.getInstance();
+    private static String screenShotDir;
 
     @Before(order = 0)
     public void setUp() {
@@ -38,6 +38,7 @@ public class BaseTest {
 
         if (extentReportEnabled && extent == null) {
             extent = ExtentManager.getInstance("UI_Automation");
+            screenShotDir = ScreenshotUtils.getInstance();
         }
     }
 

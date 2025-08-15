@@ -31,28 +31,28 @@ public class LoginTests {
         a.perform("Validate that the user logs in successfully",
                 ()-> Assert.assertTrue(loginServices.userLoggedIn(), "user didn't login"));
     }
-//
-//    @Test
-//    public void test_login_with_invalid_username_credentials() {
-//        loginServices.enterLoginDetails("standArd_user", "secret_sauce");
-//        a.perform("Validate that the user doesn't log in with invalid username",
-//                ()-> Assert.assertEquals(loginServices.errorTextMessage(),
-//                        "Username and password do not match any user in this service."));
-//    }
-//
-//    @Test
-//    public void test_login_with_invalid_password_credentials() {
-//        loginServices.enterLoginDetails("standard_user", "secretsauce");
-//        a.perform("Validate that the user doesn't log in with invalid password",
-//                ()-> Assert.assertEquals(loginServices.errorTextMessage(),
-//                        "Username and password do not match any user in this service."));
-//    }
-//
-//    @Test
-//    public void test_login_with_locked_out_user() {
-//        loginServices.enterLoginDetails("locked_out_user", "secret_sauce");
-//        a.perform("Validate that the user account is blocked and an error message is displayed",
-//                ()-> Assert.assertEquals(loginServices.errorTextMessage(),
-//                        "Sorry, this user has been locked out."));
-//    }
+
+    @Test
+    public void test_login_with_invalid_username_credentials() {
+        loginServices.enterLoginDetails("standArd_user", "secret_sauce");
+        a.perform("Validate that the user doesn't log in with invalid username",
+                ()-> Assert.assertEquals(loginServices.errorTextMessage(),
+                        "Username and password do not match any user in this service."));
+    }
+
+    @Test
+    public void test_login_with_invalid_password_credentials() {
+        loginServices.enterLoginDetails("standard_user", "secretsauce");
+        a.perform("Validate that the user doesn't log in with invalid password",
+                ()-> Assert.assertEquals(loginServices.errorTextMessage(),
+                        "Username and password do not match any user in this service."));
+    }
+
+    @Test
+    public void test_login_with_locked_out_user() {
+        loginServices.enterLoginDetails("locked_out_user", "secret_sauce");
+        a.perform("Validate that the user account is blocked and an error message is displayed",
+                ()-> Assert.assertEquals(loginServices.errorTextMessage(),
+                        "Sorry, this user has been locked out."));
+    }
 }
