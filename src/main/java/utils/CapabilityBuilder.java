@@ -9,6 +9,7 @@ public class CapabilityBuilder {
         DesiredCapabilities caps = new DesiredCapabilities();
 
         caps.setCapability("platformName", platform);
+        caps.setCapability("newCommandTimeout", ConfigReader.get("newCommandTimeout"));
         caps.setCapability("udid", ConfigReader.get("udid"));
 
         // Fix app path - convert relative path to absolute path

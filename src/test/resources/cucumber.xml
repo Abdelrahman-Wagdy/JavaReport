@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<suite name="Appium Test Suite">
+    <test name="Login Tests">
+        <classes>
+            <class name="testrunners.TestRunner"/>
+        </classes>
+    </test>
+</suite>
