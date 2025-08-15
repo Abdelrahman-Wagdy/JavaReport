@@ -92,7 +92,7 @@ JavaReport/
 │       │   │   ├── CartPageSteps.java
 │       │   │   └── LoginPageSteps.java
 │       │   ├── LoginTests.java
-│       │   └── TestRunner.java
+│       │   └── testrunners.TestRunner.java
 │       └── resources/
 │           ├── features/
 │           │   ├── CartPageTests.feature
@@ -109,10 +109,10 @@ JavaReport/
 #### Using JUnit Runner
 ```bash
 # Run all Cucumber tests
-mvn test -Dtest=TestRunner
+mvn test -Dtest=testrunners.TestRunner
 
 # Run specific feature file
-mvn test -Dtest=TestRunner -Dcucumber.features="src/test/resources/features/LoginPageTests.feature"
+mvn test -Dtest=testrunners.TestRunner -Dcucumber.features="src/test/resources/features/LoginPageTests.feature"
 ```
 
 #### Using Maven Surefire
@@ -158,7 +158,7 @@ Update `testng.xml`:
 #### For Cucumber Tests
 ```bash
 # Run tests and generate Allure results
-mvn clean test -Dtest=TestRunner
+mvn clean test -Dtest=testrunners.TestRunner
 
 # Generate Allure report
 allure generate target/allure-results -o target/allure-report --clean
