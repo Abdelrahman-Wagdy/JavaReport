@@ -1,3 +1,4 @@
+@test
 Feature: Testing the login page
   Background: The app launched on the device
     Given the app is launched
@@ -22,6 +23,3 @@ Feature: Testing the login page
   Scenario: Validate that server problem error message will be displayed when server error occurs
     Given that the user enters "problem_user" and "secret_sauce"
     Then the error message should be displayed with server problem
-
-
-

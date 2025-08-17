@@ -2,6 +2,7 @@
 <suite name="Appium Test Suite">
     <listeners>
         <listener class-name="listeners.TestNGAllureListener"/>
+        <listener class-name="listeners.TestNGExtentListener"/>
     </listeners>
 
     <test name="Login Tests">
