@@ -12,6 +12,7 @@ A comprehensive mobile testing framework using Appium, Cucumber, TestNG, and All
 - **Automatic Screenshots**: Screenshots captured on test success and failure
 - **Device Log Capture**: Automatic device logs capture on test failures
 - **Parallel Execution**: Support for parallel test execution
+- **Extent Reports**: Alternative/Additional, rich, interactive reports with screenshots and device logs
 
 ## 📋 Prerequisites
 
@@ -77,6 +78,10 @@ JavaReport/
 │   │   │   └── utils/
 │   │   │       ├── ActionHelper.java
 │   │   │       └── CapabilityBuilder.java
+│   │   │   ├── basetest/
+│   │   │   │   ├── BaseTest.java
+│   │   │   │   ├── ExtentManager.java
+│   │   │   │   └── ScreenshotUtils.java
 │   │   └── resources/
 │   │       ├── app/
 │   │       │   └── Android.SauceLabs.Mobile.Sample.app.2.7.1.apk
@@ -84,19 +89,21 @@ JavaReport/
 │   └── test/
 │       ├── java/
 │       │   ├── hooks/
-│       │   │   ├── Hooks.java
 │       │   │   └── StepTracker.java
 │       │   ├── listeners/
-│       │   │   └── TestNGAllureListener.java
+│       │   │   ├── TestNGAllureListener.java
+│       │   │   └── TestNGExtentListener.java
 │       │   ├── stepdefs/
 │       │   │   ├── CartPageSteps.java
 │       │   │   └── LoginPageSteps.java
 │       │   ├── LoginTests.java
-│       │   └── testrunners.TestRunner.java
+│       │   ├── testrunners/
+│       │   │   └── TestRunner.java
 │       └── resources/
 │           ├── features/
 │           │   ├── CartPageTests.feature
 │           │   └── LoginPageTests.feature
+│           ├── cucumber.xml
 │           └── testng.xml
 ├── pom.xml
 └── README.md
@@ -676,6 +683,116 @@ appium --log appium.log --log-level debug
 # Run tests with detailed logging
 mvn test -X
 ```
+
+## 💡 Extent Reports (Alternative/Additional Reporting)
+
+This project also supports Extent Reports for both TestNG and Cucumber executions. Extent produces a standalone HTML report with embedded screenshots and logs.
+
+### 1) What’s already configured
+
+- Dependency in `pom.xml`:
+```xml
+<dependency>
+    <groupId>com.aventstack</groupId>
+    <artifactId>extentreports</artifactId>
+    <version>5.1.2</version>
+</dependency>
+```
+- Core classes:
+  - `basetest.ExtentManager` – initializes report output path and metadata
+  - `basetest.ScreenshotUtils` – saves screenshots and returns Base64 data URIs
+  - `listeners.TestNGExtentListener` – integrates Extent with TestNG
+  - `basetest.BaseTest` – integrates Extent with Cucumber Hooks (behind a flag)
+
+### 2) Output location
+
+- HTML reports: `extent-report/{timestamp}_{device or name}/ExtentReport.html`
+- Screenshots: `extent-report/screenshots/{timestamp}_screenshots/...`
+
+Open the report by double-clicking the `ExtentReport.html` file or with a browser.
+
+### 3) Using Extent with TestNG
+
+Add the Extent listener to `src/test/resources/testng.xml` (alongside Allure listener if you want both):
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<suite name="Appium Test Suite">
+    <listeners>
+        <!-- Extent Reports listener -->
+        <listener class-name="listeners.TestNGExtentListener"/>
+
+        <!-- Optional: keep Allure listener if you want both reports -->
+        <listener class-name="listeners.TestNGAllureListener"/>
+    </listeners>
+
+    <test name="Login Tests">
+        <classes>
+            <class name="LoginTests"/>
+        </classes>
+    </test>
+</suite>
+```
+
+Run your TestNG suite as usual:
+```bash
+mvn test -DsuiteXmlFile=src/test/resources/testng.xml
+```
+
+After execution, open the generated HTML under `extent-report/.../ExtentReport.html`.
+
+### 4) Using Extent with Cucumber
+
+Extent is enabled for Cucumber via `basetest.BaseTest` using a config flag.
+
+- Ensure your JUnit runner glues the `basetest` package (already present):
+```java
+@RunWith(Cucumber.class)
+@CucumberOptions(
+    features = "src/test/resources/features",
+    glue = {"stepdefs", "basetest"},
+    plugin = {
+        "pretty",
+        "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
+    },
+    monochrome = true
+)
+public class TestRunner {}
+```
+
+- Enable Extent for Cucumber by setting the flag in `src/main/resources/config.properties`:
+```properties
+extentReportEnabled=true
+```
+
+Run Cucumber the same way you run your JUnit runner:
+```bash
+mvn test -Dtest=testrunners.TestRunner
+```
+
+The Extent HTML report will be created under `extent-report/.../ExtentReport.html`.
+
+### 5) What gets captured
+
+- Step-level screenshots (Cucumber) via `@AfterStep`
+- Success/failure screenshots (TestNG listener)
+- Device logs on failures (where available)
+- Basic environment information
+
+### 6) Using Allure and Extent together
+
+It’s safe to produce both reports in the same run:
+- Keep Allure plugins in the Cucumber runner and `TestNGAllureListener` in `testng.xml`
+- Add `TestNGExtentListener` for TestNG or set `extentReportEnabled=true` for Cucumber
+
+Output will be:
+- Allure: `target/allure-results` → generate with `allure generate`/`allure open`
+- Extent: `extent-report/.../ExtentReport.html` (open directly in a browser)
+
+### 7) Tips
+
+- Don’t commit `extent-report/` to VCS; add it to `.gitignore`
+- You can label the device/folder name by passing a system property, e.g. `-Ddevice.name="Android Emulator"`
+- For CI artifacts, publish `extent-report/**/*.html` as a build artifact
 
 ## 📈 Best Practices
 

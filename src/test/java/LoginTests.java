@@ -1,6 +1,8 @@
 import core.AppiumServerManager;
 import core.DriverFactory;
 import io.appium.java_client.AppiumDriver;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -25,6 +27,7 @@ public class LoginTests {
         driver.quit();
         AppiumServerManager.stopServer();
     }
+    @Severity(SeverityLevel.CRITICAL)
     @Test
     public void test_login_with_valid_credentials() {
         loginServices.enterLoginDetails("standard_user", "secret_sauce");
@@ -32,14 +35,16 @@ public class LoginTests {
                 ()-> Assert.assertTrue(loginServices.userLoggedIn(), "user didn't login"));
     }
 
+    @Severity(SeverityLevel.CRITICAL)
     @Test
     public void test_login_with_invalid_username_credentials() {
         loginServices.enterLoginDetails("standArd_user", "secret_sauce");
         a.perform("Validate that the user doesn't log in with invalid username",
                 ()-> Assert.assertEquals(loginServices.errorTextMessage(),
-                        "Username and password do not match any user in this service."));
+                        "Username and password do match any user in this service."));
     }
 
+    @Severity(SeverityLevel.CRITICAL)
     @Test
     public void test_login_with_invalid_password_credentials() {
         loginServices.enterLoginDetails("standard_user", "secretsauce");
@@ -48,6 +53,7 @@ public class LoginTests {
                         "Username and password do not match any user in this service."));
     }
 
+    @Severity(SeverityLevel.NORMAL)
     @Test
     public void test_login_with_locked_out_user() {
         loginServices.enterLoginDetails("locked_out_user", "secret_sauce");
