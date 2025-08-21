@@ -5,6 +5,7 @@ import basetest.ScreenshotUtils;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
+import config.ConfigReader;
 import core.DriverFactory;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.logging.LogEntries;
@@ -31,7 +32,7 @@ public class TestNGExtentListener implements ITestListener {
 
     @Override
     public void onStart(ITestContext context) {
-        String deviceName = System.getProperty("device.name", "Android Emulator");
+        String deviceName = ConfigReader.get("deviceName", "Android Emulator");
         extent = ExtentManager.getInstance(deviceName);
         screenshotDir = ScreenshotUtils.getInstance();
     }
@@ -136,8 +137,8 @@ public class TestNGExtentListener implements ITestListener {
     private void addEnvironmentInfo(ITestResult result) {
         String environmentInfo = "Test: " + result.getMethod().getMethodName() + "\n" +
                 "Class: " + result.getTestClass().getName() + "\n" +
-                "Platform: Android\n" +
-                "Device: " + System.getProperty("device.name", "Android Emulator") + "\n" +
+                "Platform: " + ConfigReader.get("platformName", "Android") + "\n" +
+                "Device: " + ConfigReader.get("deviceName", "Android Emulator") + "\n" +
                 "App: SauceLabs Demo App\n" +
                 "Started: " + SDF.format(new Date());
         test.get().log(Status.INFO, environmentInfo);

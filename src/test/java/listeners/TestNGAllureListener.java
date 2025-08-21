@@ -1,5 +1,6 @@
 package listeners;
 
+import config.ConfigReader;
 import core.DriverFactory;
 import io.appium.java_client.AppiumDriver;
 import io.qameta.allure.Allure;
@@ -141,8 +142,8 @@ public class TestNGAllureListener implements ITestListener {
         try {
             String environmentInfo = "Test: " + result.getMethod().getMethodName() + "\n" +
                     "Class: " + result.getTestClass().getName() + "\n" +
-                    "Platform: Android\n" +
-                    "Device: " + System.getProperty("device.name", "Android Emulator") + "\n" +
+                    "Platform: " + ConfigReader.get("platformName", "Android") + "\n" +
+                    "Device: " + ConfigReader.get( "deviceName", "Android Emulator") + "\n" +
                     "App: SauceLabs Demo App\n" +
                     "Started: " + SDF.format(new Date());
 

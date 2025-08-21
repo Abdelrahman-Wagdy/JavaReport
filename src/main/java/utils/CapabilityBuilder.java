@@ -51,7 +51,7 @@ public class CapabilityBuilder {
                 caps.setCapability("automationName", "XCUITest");
                 caps.setCapability("platformVersion", ConfigReader.get("platformVersion"));
                 caps.setCapability("deviceName", ConfigReader.get("deviceName", "iPhone Simulator"));
-                caps.setCapability("newCommandTimeout", 300);
+//                caps.setCapability("newCommandTimeout", 300);
                 break;
 
             default:

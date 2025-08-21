@@ -1,5 +1,6 @@
 package loginpage;
 
+import config.ConfigReader;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import org.openqa.selenium.By;
@@ -17,25 +18,25 @@ public class LoginServices extends PageBase {
 
     @CacheLookup
     @AndroidFindBy(accessibility = "test-Username")
-    @iOSXCUITFindBy(id = "ay haga")
+    @iOSXCUITFindBy(accessibility = "test-Username")
     WebElement username;
 
     @CacheLookup
     @AndroidFindBy(accessibility = "test-Password")
-    @iOSXCUITFindBy(id = "ay haga")
+    @iOSXCUITFindBy(accessibility = "test-Password")
     WebElement password;
 
     @CacheLookup
     @AndroidFindBy(accessibility = "test-LOGIN")
-    @iOSXCUITFindBy(id = "ay haga")
+    @iOSXCUITFindBy(accessibility = "test-LOGIN")
     WebElement loginButton;
 
     @AndroidFindBy(accessibility = "test-Cart drop zone")
-    @iOSXCUITFindBy(id = "ay haga")
+    @iOSXCUITFindBy(id = "test-Cart drop zone")
     WebElement menuButton;
 
     @AndroidFindBy(accessibility = "test-Error message")
-    @iOSXCUITFindBy(id = "ay haga")
+    @iOSXCUITFindBy(accessibility = "test-Error message")
     WebElement errorMessage;
 
 
@@ -72,7 +73,12 @@ public class LoginServices extends PageBase {
 
     public String errorTextMessage(){
         waitForVisibility(errorMessage);
-        WebElement errorText = errorMessage.findElement(By.xpath(".//android.widget.TextView"));
+        WebElement errorText;
+        if(ConfigReader.get("platformName").equalsIgnoreCase("android")){
+            errorText = errorMessage.findElement(By.xpath(".//android.widget.TextView"));
+        }else{
+            errorText = errorMessage.findElement(By.xpath("//XCUIElementTypeStaticText"));
+        }
         return errorText.getText();
     }
 
