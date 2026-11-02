@@ -27,7 +27,7 @@ A comprehensive mobile testing framework using Appium, Cucumber, TestNG, and All
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Abdelrahman-Wagdy/JavaReport.git
    cd JavaReport
    ```
 
